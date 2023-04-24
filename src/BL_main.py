@@ -1,7 +1,7 @@
-import argparse
-import json
-import os
+import argparse, json, os, shutil
 import importlib.util
+
+from os import path
 
 """ DOCSTRING GOES HERE"""
 
@@ -27,7 +27,11 @@ def parser():
         help="Mode of running (train or eval)")
 
     args = parser.parse_args() # access via args.argument
-    args_dict = vars(args) # access via args_dict["argument"] 
+    args_dict = vars(args) # access via args_dict["argument"]
+
+    if args.mode not in ['train', 'eval']:
+        print(f'\n {args.mode} is not a valid mode. Switching to eval')
+        args_dict['mode'] = 'eval'
 
     with open(args.configpath, 'r') as f: # load the config file (-c)
         parameters = json.load(f)
@@ -39,11 +43,17 @@ def parser():
     try:
         os.makedirs(experiment_path) # creates the relevant experiment path
     except FileExistsError:
-        print('\n"{}" already exists.'.format(args.name), end='\t')
-        decision = str.lower(input("Overwrite? [y/N] \t")) or "n"
+
+        print(f'\n"{args.name}/{args.mode}" already exists. ')
+        decision = str.lower(input("Clear and overwrite? [y/N] \t")) or "n"
+        
         if decision != 'y':
             print('Aborting')
             return -1
+
+        # Deletes the entire folder and builds a new one
+        shutil.rmtree(experiment_path)
+        os.makedirs(experiment_path)
 
     with open(os.path.join(experiment_path, 'config.json'), 'w+') as f:
         json.dump(parameters, f, sort_keys=True, indent=0) # writes config
@@ -67,14 +77,27 @@ def load_modelpack():
     modelpack_fullpath = os.path.join(os.getcwd(),
         params['modelpack_folder_path'], modelpack_name+'.py')
 
-    spec = importlib.util.spec_from_file_location(modelpack_name, 
-        modelpack_fullpath)
+    if path.isfile(modelpack_fullpath):
+        spec = importlib.util.spec_from_file_location(modelpack_name, 
+            modelpack_fullpath)
+    else:
+        print (f'Model Pack {modelpack_name} in config file does not exist.' +
+            '\nDefaulting to basemodelpack')
+
+        modelpack_defaultpath = os.path.join(os.getcwd(),
+        params['modelpack_folder_path'], 'basemodelpack.py')
+
+        spec = importlib.util.spec_from_file_location('basemodelpack', 
+            modelpack_defaultpath) 
 
     return spec.loader.load_module()
 
 
 if __name__ == '__main__':
     params = parser()
-    modelpack = load_modelpack()
 
-    #modelpack.preprocess()
+    if params != -1:
+        modelpack = load_modelpack()
+
+        #os.listdir(params['pos_train_path'])
+        modelpack.preprocess()

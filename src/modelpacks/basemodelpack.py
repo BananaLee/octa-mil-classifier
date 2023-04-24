@@ -8,8 +8,12 @@ from tensorflow.keras.losses import BinaryCrossentropy
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import Model
 
+from ..utils.utils import _image_to_numpy
+
 def preprocess():
     print('I love Marieke')
+
+    _image_to_numpy()
 
 def train_model():
     model = model_architecture()
