@@ -1,0 +1,10 @@
+{
+"configpath": "./config.json",
+"mode": "eval",
+"modelpack_folder_path": "src/modelpacks/",
+"name": "test",
+"neg_test_path": "../data/healthy_images/test_files",
+"neg_train_path": "../data/healthy_images/train_files",
+"pos_test_path": "../data/diabetic_images/test_files",
+"pos_train_path": "../data/diabetic_images/train_files"
+}
