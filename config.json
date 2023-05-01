@@ -1,9 +1,13 @@
 {
 "modelpack_folder_path": "src/modelpacks/",
 "modelpack_used": "basemodelpack",
-"buffer": 1,
+"buffer_path": "C:/Users/Ben Lee/Documents/drive_test",
+"channels": 1, 
+"val_prop": 0.2,
 "pos_train_path": "data/diabetic_images/train_files",
 "neg_train_path": "data/healthy_images/train_files",
-"pos_test_path": ".data/diabetic_images/test_files",
-"neg_test_path": "data/healthy_images/test_files"
+"pos_test_path": "data/diabetic_images/mini_test",
+"neg_test_path": "data/healthy_images/mini_test",
+"train_path": "data/training_data",
+"test_path": "data/mini_test"
 }

@@ -2,18 +2,48 @@
 '''
 import numpy as np
 import tensorflow as tf
+import os
+import pathlib
 from tensorflow.keras.layers import Dense, Dropout, Input
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten
 from tensorflow.keras.losses import BinaryCrossentropy
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import Model
 
-from ..utils.utils import _image_to_numpy
+import octa_utilities as util
+from octa_utilities import process_path
 
-def preprocess():
-    print('I love Marieke')
+def preprocess(datapath, channels=None, mode="eval", val_prop=None):
+    
+    '''try: 
+        shutil.rmtree(buffer_path)
+        print(f'Original buffer folder {buffer_path} overwritten')
+    except:
+        pass
 
-    _image_to_numpy()
+    os.makedirs(buffer_path)
+
+    channels = 1 if channels is None else channels
+    
+    util.images_to_buffer(positive_folder, buffer_path, channels, 1)
+    #util.images_to_buffer(negative_folder, buffer_path, channels, 0)'''
+    channels = 1 if channels is None else channels
+    val_prop = 0.2 if val_prop is None else val_prop
+    full_datapath = pathlib.Path(datapath)
+
+    AUTOTUNE = tf.data.AUTOTUNE
+    ## NEED TO TRANSFER CLASS_NAMES AND EVTL IMAGE_SIZE TO UTILS SOMEHOW
+    CLASS_NAMES = ['diabetic', 'healthy']#np.array([item.name for item in full_datapath.glob('*')])
+
+    list_ds = tf.data.Dataset.list_files(str(full_datapath/'*/*'))
+    
+    if mode == "train":
+        #split into train/val, return two dses
+        ## CONFIRM THAT MIL SIMPLY INVOLVES CHOIPPING IMAGE INTO 10x10??
+    else: 
+        labelled_ds = list_ds.map(process_path, num_parallel_calls=AUTOTUNE)
+        return labelled_ds, None
+
 
 def train_model():
     model = model_architecture()

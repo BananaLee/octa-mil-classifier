@@ -1,5 +1,6 @@
 import argparse, json, os, shutil
 import importlib.util
+import sys
 
 from os import path
 
@@ -95,9 +96,21 @@ def load_modelpack():
 
 if __name__ == '__main__':
     params = parser()
+    if params == -1:
+        sys.exit()
 
-    if params != -1:
-        modelpack = load_modelpack()
+    modelpack = load_modelpack()
 
-        #os.listdir(params['pos_train_path'])
-        modelpack.preprocess()
+    if params['mode'] == 'train':
+        #pos_folder = params['pos_train_path']
+        #neg_folder = params['neg_train_path']
+        datapath = params['train_path']
+    elif params['mode'] == 'eval':
+        #pos_folder = params['pos_test_path']
+        #neg_folder = params['neg_test_path']
+        datapath = params['test_path']
+
+    buffer_path = params.get("buffer_path")
+    channels = params.get("channels")
+
+    main_ds, val_ds = modelpack.preprocess(datapath, channels)
