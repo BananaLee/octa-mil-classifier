@@ -15,18 +15,6 @@ from octa_utilities import process_path
 
 def preprocess(datapath, channels=None, mode="eval", val_prop=None):
     
-    '''try: 
-        shutil.rmtree(buffer_path)
-        print(f'Original buffer folder {buffer_path} overwritten')
-    except:
-        pass
-
-    os.makedirs(buffer_path)
-
-    channels = 1 if channels is None else channels
-    
-    util.images_to_buffer(positive_folder, buffer_path, channels, 1)
-    #util.images_to_buffer(negative_folder, buffer_path, channels, 0)'''
     channels = 1 if channels is None else channels
     val_prop = 0.2 if val_prop is None else val_prop
     full_datapath = pathlib.Path(datapath)
@@ -39,7 +27,9 @@ def preprocess(datapath, channels=None, mode="eval", val_prop=None):
     
     if mode == "train":
         #split into train/val, return two dses
-        ## CONFIRM THAT MIL SIMPLY INVOLVES CHOIPPING IMAGE INTO 10x10??
+        ## CONFIRM THAT MIL SIMPLY INVOLVES CHOIPPING IMAGE INTO 10x10?? YES.
+        ## CHECK THAT IMAGES ARE STANDARDISED
+        pass
     else: 
         labelled_ds = list_ds.map(process_path, num_parallel_calls=AUTOTUNE)
         return labelled_ds, None

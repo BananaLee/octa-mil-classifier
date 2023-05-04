@@ -11,5 +11,6 @@
 "pos_test_path": "data/diabetic_images/mini_test",
 "pos_train_path": "data/diabetic_images/train_files",
 "test_path": "data/mini_test",
-"train_path": "data/training_data"
+"train_path": "data/training_data",
+"val_prop": 0.2
 }
