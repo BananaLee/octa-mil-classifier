@@ -8,6 +8,14 @@ import pathlib
 import octa_utilities as util
 from octa_utilities import process_path, configure_for_performance
 
+from tensorflow.keras.layers import Input, Lambda, Dense, Flatten
+from tensorflow.keras.models import Model
+from tensorflow.keras.applications.resnet50 import ResNet50
+#from keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator,load_img
+
 def preprocess(params):
     """
     Takes params from the config file to look into a folder with image data
@@ -91,60 +99,26 @@ def make_predictions():
     pass
 
 def model_architecture(batch_size, width, height, channels):
-    '''input_shape = (2048, 2044, 1) # need way of feeding image size
-    num_labels = 1 # need way of number of labels
-    batch_size = 32
-    kernel_size = 3
-    filters = 64
-    dropout = 0.3
 
-    inputs = Input(shape=input_shape)
-    
-    y = Conv2D(filters=filters,
-     kernel_size=kernel_size,
-     activation='relu')(inputs)
-    y = MaxPooling2D()(y)
-    
-    y = Conv2D(filters=filters,
-     kernel_size=kernel_size,
-     activation='relu')(y)
-    y = MaxPooling2D()(y)
-    
-    y = Conv2D(filters=filters,
-     kernel_size=kernel_size,
-     activation='relu')(y)
-    
-    # convert image to vector 
-    y = Flatten()(y)
-    
-    # dropout regularization
-    y = Dropout(dropout)(y)
-    
-    outputs = Dense(num_labels, activation='softmax')(y)
-     # model building by supplying inputs/outputs
-    
-    model = Model(inputs=inputs, outputs=outputs)'''
-    input_shape = (batch_size, width, height, channels)
+    input_shape = (width, height, channels)
     num_classes = 2
 
-    model = tf.keras.Sequential([
-        tf.keras.layers.Rescaling(1./255),
-        tf.keras.layers.Conv2D(32, 3, activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(32, 3, activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Conv2D(32, 3, activation='relu'),
-        tf.keras.layers.MaxPooling2D(),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(num_classes)
-    ])
+    resnet = ResNet50(input_shape=input_shape, weights='imagenet', include_top=False)
 
-    model.compile(loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), 
+    for layer in resnet.layers:
+        layer.trainable = False
+
+    x = Flatten()(resnet.output)
+
+    prediction = Dense(num_classes, activation='softmax')(x)
+
+    # create a model object
+    model = Model(inputs=resnet.input, outputs=prediction)
+
+    model.compile(loss = 'sparse_categorical_crossentropy',
         optimizer = 'adam',
         metrics = ['accuracy'])
 
-    model.build(input_shape)
     model.summary()
     
     return model

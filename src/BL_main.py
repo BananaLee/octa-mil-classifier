@@ -4,6 +4,8 @@ import sys
 
 from os import path
 
+import tensorflow as tf
+
 """ DOCSTRING GOES HERE"""
 
 def parser():
@@ -99,18 +101,13 @@ if __name__ == '__main__':
     if params == -1:
         sys.exit()
 
-    modelpack = load_modelpack()
+    modelpack = load_modelpack()    
+
+    main_ds, val_ds = modelpack.preprocess(params)
 
     if params['mode'] == 'train':
-        #pos_folder = params['pos_train_path']
-        #neg_folder = params['neg_train_path']
-        datapath = params['train_path']
+        model = modelpack.train_model(params, main_ds, val_ds)
+        # save model and add to config file
     elif params['mode'] == 'eval':
-        #pos_folder = params['pos_test_path']
-        #neg_folder = params['neg_test_path']
-        datapath = params['test_path']
-
-    buffer_path = params.get("buffer_path")
-    channels = params.get("channels")
-
-    main_ds, val_ds = modelpack.preprocess(datapath, channels)
+        pass
+    
