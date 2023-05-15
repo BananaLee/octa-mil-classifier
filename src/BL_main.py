@@ -61,7 +61,7 @@ def parser():
     with open(os.path.join(experiment_path, 'config.json'), 'w+') as f:
         json.dump(parameters, f, sort_keys=True, indent=0) # writes config
 
-    return parameters
+    return parameters, experiment_path
 
     
 def load_modelpack():
@@ -97,17 +97,30 @@ def load_modelpack():
 
 
 if __name__ == '__main__':
-    params = parser()
+    params, experiment_path = parser()
     if params == -1:
         sys.exit()
 
     modelpack = load_modelpack()    
 
-    main_ds, val_ds = modelpack.preprocess(params)
-
+    #Sets up the model, either by training or loading an already-trained model
     if params['mode'] == 'train':
-        model = modelpack.train_model(params, main_ds, val_ds)
-        # save model and add to config file
+        train_ds, val_ds = modelpack.preprocess(params)
+        model = modelpack.train_model(params, train_ds, val_ds)
+        model.save_weights(os.path.join(experiment_path,'model_weights.h5'))
+        # hyperparameter tuning? maybe another mode? or part of train? 
+        params['mode'] = 'eval' # flip mode to eval after training is done
+
     elif params['mode'] == 'eval':
-        pass
+        model = modelpack.model_architecture(params)
+        model.load_weights(os.path.join(os.getcwd(), 'experiments', 
+            params['name'], 'train/model_weights.h5'))
     
+    # will happen under all circumstances - after training
+    test_ds, empty_variable = modelpack.preprocess(params)
+
+    predictions = modelpack.make_predictions(model, test_ds)
+    print(predictions)
+
+    # evaluation - best course is to code it directly in the main because
+    # it stays the same for the entire problem rather than being model specific

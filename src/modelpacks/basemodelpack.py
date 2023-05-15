@@ -2,6 +2,7 @@
 '''
 import numpy as np
 import tensorflow as tf
+from tensorflow import keras
 import os
 import pathlib
 
@@ -70,60 +71,28 @@ def preprocess(params):
 
 def train_model(params, train_ds, val_ds):
     
+    model = model_architecture(params)
+
+    #print(f"Before {tf.config.experimental.get_memory_info('GPU:0')}")
+
+    model.fit(train_ds, validation_data=val_ds, epochs=3)
+
+    #print(f"After {tf.config.experimental.get_memory_info('GPU:0')}")
+
+    return model
+
+def make_predictions(model, test_ds):
+    return model.predict(test_ds)
+
+
+def model_architecture(params):
+
     channels = 1 if params.get("channels") is None else params.get("channels")
     width = 2048 if params.get("width") is None else params.get("width")
     height = 2044 if params.get("height") is None else params.get("height")
     batch_size = 8 if params.get("batch_size") is None \
       else params.get("batch_size")
 
-    model = model_architecture(batch_size, width, height, channels)
-
-    print(f"Before {tf.config.experimental.get_memory_info('GPU:0')}")
-
-    model.fit(train_ds, validation_data=val_ds, epochs=3)
-
-    print(f"After {tf.config.experimental.get_memory_info('GPU:0')}")
-
-    return model
-
-def make_predictions():
-    # if class is just initiated, it will load a model, otheriwse
-    pass
-
-def model_architecture(batch_size, width, height, channels):
-    '''input_shape = (2048, 2044, 1) # need way of feeding image size
-    num_labels = 1 # need way of number of labels
-    batch_size = 32
-    kernel_size = 3
-    filters = 64
-    dropout = 0.3
-
-    inputs = Input(shape=input_shape)
-    
-    y = Conv2D(filters=filters,
-     kernel_size=kernel_size,
-     activation='relu')(inputs)
-    y = MaxPooling2D()(y)
-    
-    y = Conv2D(filters=filters,
-     kernel_size=kernel_size,
-     activation='relu')(y)
-    y = MaxPooling2D()(y)
-    
-    y = Conv2D(filters=filters,
-     kernel_size=kernel_size,
-     activation='relu')(y)
-    
-    # convert image to vector 
-    y = Flatten()(y)
-    
-    # dropout regularization
-    y = Dropout(dropout)(y)
-    
-    outputs = Dense(num_labels, activation='softmax')(y)
-     # model building by supplying inputs/outputs
-    
-    model = Model(inputs=inputs, outputs=outputs)'''
     input_shape = (batch_size, width, height, channels)
     num_classes = 2
 

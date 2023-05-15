@@ -6,12 +6,12 @@
 "healthy"
 ],
 "configpath": "./config.json",
-"height": 2044,
+"height": 2048,
 "mode": "eval",
 "modelpack_folder_path": "src/modelpacks/",
 "modelpack_used": "basemodelpack",
 "name": "test",
-"test_path": "data/mini_test",
+"test_path": "data/test_data",
 "train_path": "data/training_data",
 "val_prop": 0.2,
 "width": 2048
