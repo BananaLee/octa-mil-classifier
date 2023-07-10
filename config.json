@@ -1,6 +1,6 @@
 {
 "modelpack_folder_path": "src/modelpacks/",
-"modelpack_used": "basemodelpack",
+"modelpack_used": "resnet14pack",
 "train_path": "data/training_data",
 "test_path": "data/test_data",
 "channels": 1, 

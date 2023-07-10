@@ -120,7 +120,17 @@ if __name__ == '__main__':
     test_ds, empty_variable = modelpack.preprocess(params)
 
     predictions = modelpack.make_predictions(model, test_ds)
+
+
+    print("Predictions\n")
     print(predictions)
 
+    print("OG Labels\n")
+    import numpy as np
+    y = np.concatenate([y for x, y in test_ds], axis=0)
+    print(y)
+
+    model.evaluate(test_ds)
+    
     # evaluation - best course is to code it directly in the main because
     # it stays the same for the entire problem rather than being model specific

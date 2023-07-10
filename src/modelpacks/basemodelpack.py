@@ -7,7 +7,7 @@ import os
 import pathlib
 
 import octa_utilities as util
-from octa_utilities import process_path, configure_for_performance
+from octa_utilities import process_path, configure_for_performance, f1_m, precision_m, recall_m
 
 def preprocess(params):
     """
@@ -75,14 +75,14 @@ def train_model(params, train_ds, val_ds):
 
     #print(f"Before {tf.config.experimental.get_memory_info('GPU:0')}")
 
-    model.fit(train_ds, validation_data=val_ds, epochs=3)
+    model.fit(train_ds, validation_data=val_ds, epochs=15)
 
     #print(f"After {tf.config.experimental.get_memory_info('GPU:0')}")
 
     return model
 
 def make_predictions(model, test_ds):
-    return model.predict(test_ds)
+    return model.predict(test_ds).argmax(axis=-1)
 
 
 def model_architecture(params):
@@ -106,12 +106,12 @@ def model_architecture(params):
         tf.keras.layers.MaxPooling2D(),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(num_classes)
+        tf.keras.layers.Dense(num_classes, activation='selu')
     ])
 
     model.compile(loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), 
         optimizer = 'adam',
-        metrics = ['accuracy'])
+        metrics = ['accuracy', f1_m, precision_m, recall_m])
 
     model.build(input_shape)
     model.summary()
