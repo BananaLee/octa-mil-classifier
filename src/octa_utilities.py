@@ -4,18 +4,21 @@ import tensorflow as tf
 from tensorflow.keras import layers
 import os
 from keras import backend as K
+#from keras.metrics import Precision, Recall
 
 def get_label(file_path, class_names):
 	parts = tf.strings.split(file_path, os.path.sep)
 	one_hot = parts[-2] == class_names
-	return tf.argmax(one_hot)
+	class_int = tf.argmax(one_hot)
+	return tf.cast(class_int, tf.float32) # label recast to match softmax output
 
 def decode_img(img, channels=1, width=2048, height=2048, crop_percentage=0.8):
 	img = tf.image.decode_png(img, channels=channels)
 	img = tf.image.central_crop(img, crop_percentage)# centre crop
 	img = tf.image.per_image_standardization(img)# standardise
+	img = tf.image.resize(img, [width, height]) # blows image back up
 
-	return tf.image.resize(img, [width, height]) # blows image back up
+	return img
 
 def process_path(file_path, class_names, channels, width, height):
 	label = get_label(file_path, class_names)
@@ -23,7 +26,7 @@ def process_path(file_path, class_names, channels, width, height):
 	img = decode_img(img, channels, width, height)
 	return img, label
 
-def configure_for_performance(ds, batch_size, shuffle=False, augment=False):
+def augment_and_performance(ds, batch_size, shuffle=False, augment=False):
 	ds = ds.cache()
 	
 	if shuffle: # only shuffle the dataset if it is training
@@ -43,12 +46,3 @@ def configure_for_performance(ds, batch_size, shuffle=False, augment=False):
 
 	ds = ds.prefetch(buffer_size=tf.data.AUTOTUNE)
 	return ds
-
-def f1_metric(y_true, y_pred): #taken from old keras source code
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    recall = true_positives / (possible_positives + K.epsilon())
-    f1_val = 2*(precision*recall)/(precision+recall+K.epsilon())
-    return f1_val

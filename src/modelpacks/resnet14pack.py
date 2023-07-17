@@ -16,7 +16,7 @@ import pathlib
 import math
 
 import octa_utilities as util
-from octa_utilities import process_path, configure_for_performance, f1_metric
+from octa_utilities import process_path, augment_and_performance, f1_metric
 
 def preprocess(params):
     """
@@ -82,9 +82,19 @@ def train_model(params, train_ds, val_ds):
     
     model = model_architecture(params)
 
+    experiment_path = os.path.join(os.getcwd(), 'experiments', params['name'], 
+        params['mode'])
+
     #print(f"Before {tf.config.experimental.get_memory_info('GPU:0')}")
 
-    model.fit(train_ds, validation_data=val_ds, epochs=25)
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_f1_score', 
+        mode='max', restore_best_weights=True, patience=3)
+    csv_logger = tf.keras.callbacks.CSVLogger(
+        os.path.join(experiment_path,'training.log'))
+
+
+    model.fit(train_ds, validation_data=val_ds, epochs=100, 
+        callbacks=[early_stopping, csv_logger])
 
     #print(f"After {tf.config.experimental.get_memory_info('GPU:0')}")
 
@@ -139,9 +149,9 @@ def resnet(x, blocks_per_layer, num_classes=1000):
     x = layers.ZeroPadding2D(padding=1, name='maxpool_pad')(x)
     x = layers.MaxPool2D(pool_size=3, strides=2, name='maxpool')(x)
 
-    x = make_layer(x, 16, blocks_per_layer[0], name='layer1')
-    x = make_layer(x, 32, blocks_per_layer[1], stride=2, name='layer2')
-    x = make_layer(x, 64, blocks_per_layer[2], stride=2, name='layer3')
+    x = make_layer(x, 64, blocks_per_layer[0], name='layer1')
+    x = make_layer(x, 128, blocks_per_layer[1], stride=2, name='layer2')
+    x = make_layer(x, 256, blocks_per_layer[2], stride=2, name='layer3')
     #x = make_layer(x, 512, blocks_per_layer[3], stride=2, name='layer4')
 
     x = layers.GlobalAveragePooling2D(name='avgpool')(x)
@@ -168,7 +178,7 @@ def model_architecture(params):
         optimizer = 'adam',
         metrics = ['accuracy', 
                     keras.metrics.AUC(), 
-                    f1_metric,
+                    keras.metrics.F1Score(),
                     keras.metrics.Precision(), 
                     keras.metrics.Recall()])
 

@@ -106,6 +106,7 @@ if __name__ == '__main__':
     #Sets up the model, either by training or loading an already-trained model
     if params['mode'] == 'train':
         train_ds, val_ds = modelpack.preprocess(params)
+
         model = modelpack.train_model(params, train_ds, val_ds)
         model.save_weights(os.path.join(experiment_path,'model_weights.h5'))
         # hyperparameter tuning? maybe another mode? or part of train? 
@@ -121,7 +122,6 @@ if __name__ == '__main__':
 
     predictions = modelpack.make_predictions(model, test_ds)
 
-
     print("Predictions\n")
     print(predictions)
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     y = np.concatenate([y for x, y in test_ds], axis=0)
     print(y)
 
-    model.evaluate(test_ds)
-    
     # evaluation - best course is to code it directly in the main because
     # it stays the same for the entire problem rather than being model specific
+
+    model.evaluate(test_ds)
