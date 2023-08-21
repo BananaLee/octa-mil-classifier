@@ -20,6 +20,8 @@ from kerastuner import HyperModel
 import octa_utilities as util
 from octa_utilities import process_path, augment_and_performance
 
+import tensorflow_addons as tfa # use for F1 score until move to tf 2.13
+
 def preprocess(params):
     """
     Takes params from the config file to look into a folder with image data
@@ -82,15 +84,15 @@ def preprocess(params):
 
 def train_model(params, train_ds, val_ds):
     
-    
     resnet_model = ResnetHyperModel(params)
 
     tuner = kt.Hyperband(hypermodel=resnet_model,
                      objective=kt.Objective("val_f1_score", direction="max"),
-                     max_epochs=10,
+                     max_epochs=25,
                      factor=3,
-                     directory='no idea',
-                     project_name='hp tuning test')
+                     directory= os.path.join(os.getcwd(), 'experiments', 
+                        params['name'], params['mode']),
+                     project_name='hp tuning')
 
     #model = model_architecture(params)
 
@@ -208,7 +210,9 @@ def model_architecture(params, lr):
         optimizer = keras.optimizers.Adam(learning_rate=lr),
         metrics = ['accuracy', 
                     keras.metrics.AUC(), 
-                    keras.metrics.F1Score(),
+                    tfa.metrics.F1Score(num_classes=2, threshold=0.5, 
+                        average='micro'),
+                    #keras.metrics.F1Score(),
                     keras.metrics.Precision(), 
                     keras.metrics.Recall()])
 

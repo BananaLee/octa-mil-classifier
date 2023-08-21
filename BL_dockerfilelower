@@ -1,7 +1,0 @@
-FROM nvcr.io/nvidia/tensorflow:23.07-tf2-py3
-RUN apt-get update
-RUN apt install -y python3-pip
-RUN pip install --upgrade pip
-RUN pip install --upgrade setuptools
-
-RUN pip install keras-tuner

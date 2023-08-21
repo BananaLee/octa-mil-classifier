@@ -1,9 +1,5 @@
-docker run --gpus all -it --rm nvcr.io/nvidia/tensorflow:23.07-tf2-py3 
-
-
-docker run --gpus all -v "/home/julius/Desktop/Ben Lee - Masters Thesis/":/benny -w /benny -it --rm nvcr.io/nvidia/tensorflow:23.07-tf2-py3 
-
-
-sudo docker build BL_dockerfile
+sudo docker build - < BL_dockerfilelower -t bleemasters
 
 sudo docker run --gpus all -v "/home/julius/Desktop/Ben Lee - Masters Thesis/":/benny -w /benny -it --rm bleemasters
+
+sudo docker run --gpus all -v "/mnt/g/My Drive/Uni/Thesis/octa-mil-classifier":/benny -w /benny -it --rm bleemasters
