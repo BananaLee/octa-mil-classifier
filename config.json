@@ -7,6 +7,7 @@
 "val_prop": 0.2,
 "width": 2048,
 "height": 2048,
+"image_patch_size": 256,
 "batch_size": 2,
 "class_names": ["diabetic", "healthy"]
 }
