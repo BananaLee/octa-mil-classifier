@@ -14,6 +14,7 @@ from tensorflow.keras import layers
 import os
 import pathlib
 import math
+import warnings
 
 import octa_utilities as util
 from octa_utilities import process_path, augment_and_performance
@@ -183,28 +184,36 @@ def model_architecture(params):
       else params.get("image_patch_size")
 
     input_shape = (width, height, channels)
-    patch_shape = (image_patch_size, image_patch_size, channels)
+    patch_shape = [1, image_patch_size, image_patch_size, 1]
+    patch_image_shape = []
 
     main_input_image = keras.Input(shape=input_shape)
-    instance_model = generate_resnet_model(patch_shape)
-
+    
     # splitting the main image and feeding them into the individual model
+    if channels > 1:
+        warnings.warn('WARNING: Extract patches does not yet work on multiple channels')
+
+    patches = tf.image.extract_patches(
+        main_input_image,
+        sizes = patch_shape,
+        strides = patch_shape,
+        rates=[1, 1, 1, 1],
+        padding = 'SAME')
+
+    # reshapes the output to produce a tensor of shape [batch, n_patches, patch_h, patch_w, channel]
+    patches = layers.Reshape((-1, image_patch_size, image_patch_size, 1))(patches)
+
+    # puts the patches sequentially into the Resnet model and takes the output
+    instance_model = generate_resnet_model(patch_shape)
+    instance_outputs = layers.TimeDistributed(instance_model)(patches)
+
+    print(instance_outputs.shape) #DEBUG
+
     # outputting the results in the patches list which can then be pooled
 
-    patch_output_list = []
+    #patches = tf.concat(patch_output_list,1)
 
-    for i in range(0, width, image_patch_size):
-        for j in range(0, height, image_patch_size):
-
-            instance_output = instance_model(main_input_image
-                [ : , i : i + image_patch_size, 
-                j : j + image_patch_size , : ])
-
-            patch_output_list.append(instance_output)
-
-    patches = tf.concat(patch_output_list,1)
-
-    pool_output = tf.math.top_k(patches, k=3).values # take the top 3 in the output
+    pool_output = tf.math.top_k(instance_outputs, k=3).values # take the top 3 in the output
 
     print(pool_output)
 
