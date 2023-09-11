@@ -1,0 +1,203 @@
+odel: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ input_1 (InputLayer)           [(None, 2048, 2048,  0           []                               
+                                 1)]                                                              
+                                                                                                  
+ conv1_pad (ZeroPadding2D)      (None, 2054, 2054,   0           ['input_1[0][0]']                
+                                1)                                                                
+                                                                                                  
+ conv1 (Conv2D)                 (None, 1024, 1024,   3136        ['conv1_pad[0][0]']              
+                                64)                                                               
+                                                                                                  
+ bn1 (BatchNormalization)       (None, 1024, 1024,   256         ['conv1[0][0]']                  
+                                64)                                                               
+                                                                                                  
+ relu1 (ReLU)                   (None, 1024, 1024,   0           ['bn1[0][0]']                    
+                                64)                                                               
+                                                                                                  
+ maxpool_pad (ZeroPadding2D)    (None, 1026, 1026,   0           ['relu1[0][0]']                  
+                                64)                                                               
+                                                                                                  
+ maxpool (MaxPooling2D)         (None, 512, 512, 64  0           ['maxpool_pad[0][0]']            
+                                )                                                                 
+                                                                                                  
+ layer1.0.conv1_pad (ZeroPaddin  (None, 514, 514, 64  0          ['maxpool[0][0]']                
+ g2D)                           )                                                                 
+                                                                                                  
+ layer1.0.conv1 (Conv2D)        (None, 512, 512, 64  36864       ['layer1.0.conv1_pad[0][0]']     
+                                )                                                                 
+                                                                                                  
+ layer1.0.bn1 (BatchNormalizati  (None, 512, 512, 64  256        ['layer1.0.conv1[0][0]']         
+ on)                            )                                                                 
+                                                                                                  
+ layer1.0.relu1 (ReLU)          (None, 512, 512, 64  0           ['layer1.0.bn1[0][0]']           
+                                )                                                                 
+                                                                                                  
+ layer1.0.conv2_pad (ZeroPaddin  (None, 514, 514, 64  0          ['layer1.0.relu1[0][0]']         
+ g2D)                           )                                                                 
+                                                                                                  
+ layer1.0.conv2 (Conv2D)        (None, 512, 512, 64  36864       ['layer1.0.conv2_pad[0][0]']     
+                                )                                                                 
+                                                                                                  
+ layer1.0.bn2 (BatchNormalizati  (None, 512, 512, 64  256        ['layer1.0.conv2[0][0]']         
+ on)                            )                                                                 
+                                                                                                  
+ layer1.0.add (Add)             (None, 512, 512, 64  0           ['maxpool[0][0]',                
+                                )                                 'layer1.0.bn2[0][0]']           
+                                                                                                  
+ layer1.0.relu2 (ReLU)          (None, 512, 512, 64  0           ['layer1.0.add[0][0]']           
+                                )                                                                 
+                                                                                                  
+ layer1.1.conv1_pad (ZeroPaddin  (None, 514, 514, 64  0          ['layer1.0.relu2[0][0]']         
+ g2D)                           )                                                                 
+                                                                                                  
+ layer1.1.conv1 (Conv2D)        (None, 512, 512, 64  36864       ['layer1.1.conv1_pad[0][0]']     
+                                )                                                                 
+                                                                                                  
+ layer1.1.bn1 (BatchNormalizati  (None, 512, 512, 64  256        ['layer1.1.conv1[0][0]']         
+ on)                            )                                                                 
+                                                                                                  
+ layer1.1.relu1 (ReLU)          (None, 512, 512, 64  0           ['layer1.1.bn1[0][0]']           
+                                )                                                                 
+                                                                                                  
+ layer1.1.conv2_pad (ZeroPaddin  (None, 514, 514, 64  0          ['layer1.1.relu1[0][0]']         
+ g2D)                           )                                                                 
+                                                                                                  
+ layer1.1.conv2 (Conv2D)        (None, 512, 512, 64  36864       ['layer1.1.conv2_pad[0][0]']     
+                                )                                                                 
+                                                                                                  
+ layer1.1.bn2 (BatchNormalizati  (None, 512, 512, 64  256        ['layer1.1.conv2[0][0]']         
+ on)                            )                                                                 
+                                                                                                  
+ layer1.1.add (Add)             (None, 512, 512, 64  0           ['layer1.0.relu2[0][0]',         
+                                )                                 'layer1.1.bn2[0][0]']           
+                                                                                                  
+ layer1.1.relu2 (ReLU)          (None, 512, 512, 64  0           ['layer1.1.add[0][0]']           
+                                )                                                                 
+                                                                                                  
+ layer2.0.conv1_pad (ZeroPaddin  (None, 514, 514, 64  0          ['layer1.1.relu2[0][0]']         
+ g2D)                           )                                                                 
+                                                                                                  
+ layer2.0.conv1 (Conv2D)        (None, 256, 256, 12  73728       ['layer2.0.conv1_pad[0][0]']     
+                                8)                                                                
+                                                                                                  
+ layer2.0.bn1 (BatchNormalizati  (None, 256, 256, 12  512        ['layer2.0.conv1[0][0]']         
+ on)                            8)                                                                
+                                                                                                  
+ layer2.0.relu1 (ReLU)          (None, 256, 256, 12  0           ['layer2.0.bn1[0][0]']           
+                                8)                                                                
+                                                                                                  
+ layer2.0.conv2_pad (ZeroPaddin  (None, 258, 258, 12  0          ['layer2.0.relu1[0][0]']         
+ g2D)                           8)                                                                
+                                                                                                  
+ layer2.0.downsample.0 (Conv2D)  (None, 256, 256, 12  8192       ['layer1.1.relu2[0][0]']         
+                                8)                                                                
+                                                                                                  
+ layer2.0.conv2 (Conv2D)        (None, 256, 256, 12  147456      ['layer2.0.conv2_pad[0][0]']     
+                                8)                                                                
+                                                                                                  
+ layer2.0.downsample.1 (BatchNo  (None, 256, 256, 12  512        ['layer2.0.downsample.0[0][0]']  
+ rmalization)                   8)                                                                
+                                                                                                  
+ layer2.0.bn2 (BatchNormalizati  (None, 256, 256, 12  512        ['layer2.0.conv2[0][0]']         
+ on)                            8)                                                                
+                                                                                                  
+ layer2.0.add (Add)             (None, 256, 256, 12  0           ['layer2.0.downsample.1[0][0]',  
+                                8)                                'layer2.0.bn2[0][0]']           
+                                                                                                  
+ layer2.0.relu2 (ReLU)          (None, 256, 256, 12  0           ['layer2.0.add[0][0]']           
+                                8)                                                                
+                                                                                                  
+ layer2.1.conv1_pad (ZeroPaddin  (None, 258, 258, 12  0          ['layer2.0.relu2[0][0]']         
+ g2D)                           8)                                                                
+                                                                                                  
+ layer2.1.conv1 (Conv2D)        (None, 256, 256, 12  147456      ['layer2.1.conv1_pad[0][0]']     
+                                8)                                                                
+                                                                                                  
+ layer2.1.bn1 (BatchNormalizati  (None, 256, 256, 12  512        ['layer2.1.conv1[0][0]']         
+ on)                            8)                                                                
+                                                                                                  
+ layer2.1.relu1 (ReLU)          (None, 256, 256, 12  0           ['layer2.1.bn1[0][0]']           
+                                8)                                                                
+                                                                                                  
+ layer2.1.conv2_pad (ZeroPaddin  (None, 258, 258, 12  0          ['layer2.1.relu1[0][0]']         
+ g2D)                           8)                                                                
+                                                                                                  
+ layer2.1.conv2 (Conv2D)        (None, 256, 256, 12  147456      ['layer2.1.conv2_pad[0][0]']     
+                                8)                                                                
+                                                                                                  
+ layer2.1.bn2 (BatchNormalizati  (None, 256, 256, 12  512        ['layer2.1.conv2[0][0]']         
+ on)                            8)                                                                
+                                                                                                  
+ layer2.1.add (Add)             (None, 256, 256, 12  0           ['layer2.0.relu2[0][0]',         
+                                8)                                'layer2.1.bn2[0][0]']           
+                                                                                                  
+ layer2.1.relu2 (ReLU)          (None, 256, 256, 12  0           ['layer2.1.add[0][0]']           
+                                8)                                                                
+                                                                                                  
+ layer3.0.conv1_pad (ZeroPaddin  (None, 258, 258, 12  0          ['layer2.1.relu2[0][0]']         
+ g2D)                           8)                                                                
+                                                                                                  
+ layer3.0.conv1 (Conv2D)        (None, 128, 128, 25  294912      ['layer3.0.conv1_pad[0][0]']     
+                                6)                                                                
+                                                                                                  
+ layer3.0.bn1 (BatchNormalizati  (None, 128, 128, 25  1024       ['layer3.0.conv1[0][0]']         
+ on)                            6)                                                                
+                                                                                                  
+ layer3.0.relu1 (ReLU)          (None, 128, 128, 25  0           ['layer3.0.bn1[0][0]']           
+                                6)                                                                
+                                                                                                  
+ layer3.0.conv2_pad (ZeroPaddin  (None, 130, 130, 25  0          ['layer3.0.relu1[0][0]']         
+ g2D)                           6)                                                                
+                                                                                                  
+ layer3.0.downsample.0 (Conv2D)  (None, 128, 128, 25  32768      ['layer2.1.relu2[0][0]']         
+                                6)                                                                
+                                                                                                  
+ layer3.0.conv2 (Conv2D)        (None, 128, 128, 25  589824      ['layer3.0.conv2_pad[0][0]']     
+                                6)                                                                
+                                                                                                  
+ layer3.0.downsample.1 (BatchNo  (None, 128, 128, 25  1024       ['layer3.0.downsample.0[0][0]']  
+ rmalization)                   6)                                                                
+                                                                                                  
+ layer3.0.bn2 (BatchNormalizati  (None, 128, 128, 25  1024       ['layer3.0.conv2[0][0]']         
+ on)                            6)                                                                
+                                                                                                  
+ layer3.0.add (Add)             (None, 128, 128, 25  0           ['layer3.0.downsample.1[0][0]',  
+                                6)                                'layer3.0.bn2[0][0]']           
+                                                                                                  
+ layer3.0.relu2 (ReLU)          (None, 128, 128, 25  0           ['layer3.0.add[0][0]']           
+                                6)                                                                
+                                                                                                  
+ layer3.1.conv1_pad (ZeroPaddin  (None, 130, 130, 25  0          ['layer3.0.relu2[0][0]']         
+ g2D)                           6)                                                                
+                                                                                                  
+ layer3.1.conv1 (Conv2D)        (None, 128, 128, 25  589824      ['layer3.1.conv1_pad[0][0]']     
+                                6)                                                                
+                                                                                                  
+ layer3.1.bn1 (BatchNormalizati  (None, 128, 128, 25  1024       ['layer3.1.conv1[0][0]']         
+ on)                            6)                                                                
+                                                                                                  
+ layer3.1.relu1 (ReLU)          (None, 128, 128, 25  0           ['layer3.1.bn1[0][0]']           
+                                6)                                                                
+                                                                                                  
+ layer3.1.conv2_pad (ZeroPaddin  (None, 130, 130, 25  0          ['layer3.1.relu1[0][0]']         
+ g2D)                           6)                                                                
+                                                                                                  
+ layer3.1.conv2 (Conv2D)        (None, 128, 128, 25  589824      ['layer3.1.conv2_pad[0][0]']     
+                                6)                                                                
+                                                                                                  
+ layer3.1.bn2 (BatchNormalizati  (None, 128, 128, 25  1024       ['layer3.1.conv2[0][0]']         
+ on)                            6)                                                                
+                                                                                                  
+ layer3.1.add (Add)             (None, 128, 128, 25  0           ['layer3.0.relu2[0][0]',         
+                                6)                                'layer3.1.bn2[0][0]']           
+                                                                                                  
+ layer3.1.relu2 (ReLU)          (None, 128, 128, 25  0           ['layer3.1.add[0][0]']           
+                                6)                                                                
+                                                                                                  
+ avgpool (GlobalAveragePooling2  (None, 256)         0           ['layer3.1.relu2[0][0]']         
+ D)                                                                                               
+                                                                                                  
+ fc (Dense)                     (None, 1)            257         ['avgpool[0][0]']                

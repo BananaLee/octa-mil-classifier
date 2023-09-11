@@ -91,12 +91,14 @@ def train_model(params, train_ds, val_ds):
     #print(f"Before {tf.config.experimental.get_memory_info('GPU:0')}")
 
     early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_f1_score', 
-        mode='max', restore_best_weights=True, patience=3)
+        mode='max', restore_best_weights=True, patience=10)
     csv_logger = tf.keras.callbacks.CSVLogger(
         os.path.join(experiment_path,'training.log'))
 
+    class_weights = {0: (10/7), 1: (10/3)} # HARDCODE TEMP
 
-    model.fit(train_ds, validation_data=val_ds, epochs=100, 
+    model.fit(train_ds, validation_data=val_ds, epochs=100,
+        class_weight = class_weights, 
         callbacks=[early_stopping, csv_logger])
 
     #print(f"After {tf.config.experimental.get_memory_info('GPU:0')}")
@@ -157,8 +159,8 @@ def resnet(x, blocks_per_layer, num_classes=1000):
     x = layers.MaxPool2D(pool_size=3, strides=2, name='maxpool')(x)
 
     x = make_layer(x, 64, blocks_per_layer[0], name='layer1')
-    x = make_layer(x, 128, blocks_per_layer[1], stride=2, name='layer2')
-    x = make_layer(x, 256, blocks_per_layer[2], stride=2, name='layer3')
+    x = make_layer(x, 64, blocks_per_layer[1], stride=2, name='layer2')
+    x = make_layer(x, 128, blocks_per_layer[2], stride=2, name='layer3')
     #x = make_layer(x, 512, blocks_per_layer[3], stride=2, name='layer4')
 
     x = layers.GlobalAveragePooling2D(name='avgpool')(x)
@@ -184,8 +186,7 @@ def model_architecture(params):
       else params.get("image_patch_size")
 
     input_shape = (width, height, channels)
-    patch_shape = [1, image_patch_size, image_patch_size, 1]
-    patch_image_shape = []
+    patch_shape = (1, image_patch_size, image_patch_size, 1)
 
     main_input_image = keras.Input(shape=input_shape)
     
@@ -203,28 +204,19 @@ def model_architecture(params):
     # reshapes the output to produce a tensor of shape [batch, n_patches, patch_h, patch_w, channel]
     patches = layers.Reshape((-1, image_patch_size, image_patch_size, 1))(patches)
 
-    # puts the patches sequentially into the Resnet model and takes the output
-    instance_model = generate_resnet_model(patch_shape)
+    # puts the patches sequentially into the Resnet model and takes the output of every instance
+    instance_model = generate_resnet_model((image_patch_size, image_patch_size, 1)) #convert to channels
     instance_outputs = layers.TimeDistributed(instance_model)(patches)
-
-    print(instance_outputs.shape) #DEBUG
-
-    # outputting the results in the patches list which can then be pooled
-
-    #patches = tf.concat(patch_output_list,1)
+    instance_outputs = tf.transpose(instance_outputs, perm=[0,2,1])
 
     pool_output = tf.math.top_k(instance_outputs, k=3).values # take the top 3 in the output
-
-    print(pool_output)
-
-    pool_output = tf.math.reduce_mean(pool_output, keepdims=True) # average the values
-    print(pool_output)
+    pool_output = tf.math.reduce_mean(pool_output, axis=2) # average the values
 
     # build the model taking the original input and the final pooled output
     model = keras.Model(main_input_image, pool_output)
 
     model.compile(loss = tf.keras.losses.BinaryCrossentropy(), 
-        optimizer = keras.optimizers.Adam(learning_rate=0.01),
+        optimizer = keras.optimizers.Adam(learning_rate=0.001),
         metrics = ['accuracy', 
                     keras.metrics.AUC(), 
                     tfa.metrics.F1Score(num_classes=2, threshold=0.5, 
