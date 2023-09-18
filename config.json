@@ -5,9 +5,9 @@
 "test_path": "data/test_data",
 "channels": 1, 
 "val_prop": 0.2,
-"width": 2048,
-"height": 2048,
+"width": 1024,
+"height": 1024,
 "image_patch_size": 256,
-"batch_size": 2,
+"batch_size": 1,
 "class_names": ["diabetic", "healthy"]
 }

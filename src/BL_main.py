@@ -101,6 +101,15 @@ if __name__ == '__main__':
     if params == -1:
         sys.exit()
 
+    '''physical_devices = tf.config.list_physical_devices('GPU')
+    print(physical_devices)
+    try:
+      tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    except:
+      pass'''
+
+    #tf.keras.mixed_precision.set_global_policy('float32')
+
     modelpack = load_modelpack()    
 
     #Sets up the model, either by training or loading an already-trained model
