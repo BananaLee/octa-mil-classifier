@@ -48,7 +48,7 @@ def parser():
     except FileExistsError:
 
         print(f'\n"{args.name}/{args.mode}" already exists. ')
-        decision = str.lower(input("Clear and overwrite? [y/N] \t")) or "n"
+        decision = "y" # = str.lower(input("Clear and overwrite? [y/N] \t")) or "n"
         
         if decision != 'y':
             print('Aborting')

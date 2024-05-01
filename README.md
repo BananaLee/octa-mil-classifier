@@ -22,5 +22,21 @@ ssh -l q59bleel s0-l00.hpc.meduniwien.ac.at
 
 srun enroot import 'docker://nvcr.io#muwsc/zmpbmt/bleemasters:latest'
 
-srun -p gpu -q 3g.20gb --gres=gpu:3g.20gb:1 --container-image=$HOME/octa-mil-classifier/ls
-muwsc+zmpbmt+bleemasters+latest.sqsh --pty bash
+srun -p gpu -q 3g.20gb --gres=gpu:3g.20gb:1 --container-image=$HOME/octa-mil-classifier/ls muwsc+zmpbmt+bleemasters+latest.sqsh --pty bash
+
+# To "send" your ssh key
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/id_ed25519
+ssh -A -l q59bleel s0-l00.hpc.meduniwien.ac.at
+
+# start interactive development
+srun -p gpu -q 3g.20gb --gres=gpu:3g.20gb:1 --container-image=$HOME/muwsc+zmpbmt+bleemasters+latest.sqsh --container-mount-home  --container-workdir /root/octa-mil-classifier/ --pty bash
+
+# sbatch things
+sbatch slurm_run.sh
+
+# How to check what jobs are submitted to the cluster:
+squeue -l
+
+# How to check if ur jobs are running:
+squeue -l | grep q59bleel

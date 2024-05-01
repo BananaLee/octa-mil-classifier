@@ -5,3 +5,10 @@ RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 
 RUN pip install keras-tuner
+
+COPY experiments /benny/experiments
+COPY src /benny/src
+COPY config.json /benny/config.json
+COPY cuda-keyring_1.1-1_all.deb /benny/cuda-keyring_1.1-1_all.deb
+COPY cuda-keyring_1.1-1_all.deb.1 /benny/cuda-keyring_1.1-1_all.deb.1
+COPY versioncheck.py /benny/versioncheck.py
