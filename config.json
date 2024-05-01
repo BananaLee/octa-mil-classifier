@@ -1,13 +1,13 @@
 {
 "modelpack_folder_path": "src/modelpacks/",
-"modelpack_used": "milresnetpack",
+"modelpack_used": "resnet14pack",
 "train_path": "data/training_data",
 "test_path": "data/test_data",
 "channels": 1, 
 "val_prop": 0.2,
-"width": 1024,
-"height": 1024,
+"width": 2048,
+"height": 2048,
 "image_patch_size": 256,
-"batch_size": 1,
+"batch_size": 2,
 "class_names": ["diabetic", "healthy"]
 }

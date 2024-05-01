@@ -155,7 +155,7 @@ def make_layer(x, planes, blocks, stride=1, name=None):
 
 def resnet(x, blocks_per_layer, num_classes=1000):
     x = layers.ZeroPadding2D(padding=3, name='conv1_pad')(x)
-    x = layers.Conv2D(filters=32, kernel_size=7, strides=1, use_bias=False, name='conv1')(x)
+    x = layers.Conv2D(filters=32, kernel_size=7, strides=2, use_bias=False, name='conv1')(x)
     x = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name='bn1')(x)
     x = layers.ReLU(name='relu1')(x)
     x = layers.ZeroPadding2D(padding=1, name='maxpool_pad')(x)

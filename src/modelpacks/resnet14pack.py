@@ -17,7 +17,6 @@ import math
 
 import octa_utilities as util
 from octa_utilities import process_path, augment_and_performance
-import tensorflow_addons as tfa # use for F1 score until move to tf 2.13
 
 def preprocess(params):
     """
@@ -144,15 +143,15 @@ def make_layer(x, planes, blocks, stride=1, name=None):
 
 def resnet(x, blocks_per_layer, num_classes=1000):
     x = layers.ZeroPadding2D(padding=3, name='conv1_pad')(x)
-    x = layers.Conv2D(filters=64, kernel_size=7, strides=2, use_bias=False, name='conv1')(x)
+    x = layers.Conv2D(filters=32, kernel_size=7, strides=2, use_bias=False, name='conv1')(x)
     x = layers.BatchNormalization(momentum=0.9, epsilon=1e-5, name='bn1')(x)
     x = layers.ReLU(name='relu1')(x)
     x = layers.ZeroPadding2D(padding=1, name='maxpool_pad')(x)
     x = layers.MaxPool2D(pool_size=3, strides=1, name='maxpool')(x)
 
-    x = make_layer(x, 64, blocks_per_layer[0], stride=1, name='layer1')
-    x = make_layer(x, 128, blocks_per_layer[1], stride=2, name='layer2')
-    #x = make_layer(x, 256, blocks_per_layer[2], stride=2, name='layer3')
+    x = make_layer(x, 32, blocks_per_layer[0], stride=1, name='layer1')
+    x = make_layer(x, 64, blocks_per_layer[1], stride=2, name='layer2')
+    x = make_layer(x, 128, blocks_per_layer[2], stride=2, name='layer3')
     #x = make_layer(x, 512, blocks_per_layer[3], stride=2, name='layer4')
 
     x = layers.GlobalAveragePooling2D(name='avgpool')(x)
@@ -179,9 +178,7 @@ def model_architecture(params):
         optimizer = 'adam',
         metrics = ['accuracy', 
                     keras.metrics.AUC(), 
-                    tfa.metrics.F1Score(num_classes=2, threshold=0.5, 
-                        average='micro'),
-                    #keras.metrics.F1Score(),
+                    keras.metrics.F1Score(average='micro', threshold=0.5),
                     keras.metrics.Precision(), 
                     keras.metrics.Recall()])
     model.summary()

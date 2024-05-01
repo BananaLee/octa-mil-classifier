@@ -1,5 +1,0 @@
-sudo docker build - < BL_dockerfilelower -t bleemasters
-
-sudo docker run --gpus all -v "/home/julius/Desktop/Ben Lee - Masters Thesis/":/benny -w /benny -it --rm bleemasters
-
-sudo docker run --gpus all -v "/mnt/g/My Drive/Uni/Thesis/octa-mil-classifier":/benny -w /benny -it --rm bleemasters
